@@ -124,7 +124,7 @@ struct User {
 };
 
 struct ServerState {
-    std::unordered_map<User::Id, std::unique_ptr<User>> users;
+    std::unordered_map<User::Id, User> users;
 
     bool AddUser(const sf::IpAddress ipAddress, const unsigned short port) {
         const auto id = User::MakeId(ipAddress, port);
@@ -133,11 +133,11 @@ struct ServerState {
             printf("User %zu already exists.\n", id);
             return false;
         }
+        
 
-        auto user = std::make_unique<User>();
-        user->ipAddress = ipAddress;
-        user->port = port;
-        users[id] = std::move(user);
+        auto& user = users[id];
+        user.ipAddress = ipAddress;
+        user.port = port;
         // Then send a message to the other clients that a new user has joined!
         return true;
     }
@@ -300,7 +300,7 @@ int Server() {
         
         // Send a ping message to all clients!
         for (const auto& [userId, userData] : state.users) {
-            networker.Send(server::PingPacket(), userData->ipAddress, userData->port);
+            networker.Send(server::PingPacket(), userData.ipAddress, userData.port);
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
