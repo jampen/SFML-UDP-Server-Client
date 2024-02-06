@@ -13,7 +13,6 @@ class Networker {
     static_assert(std::is_enum<MessageType>::value, "MessageType must be an enum");
     static_assert(sizeof(MessageType) == sizeof(std::uint8_t), "MessageType must be a byte in size");
 public:
-    using Self = Networker<MessageType>;
     using PacketHandler = std::function<bool()>;
 
 public:
